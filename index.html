@@ -10,7 +10,8 @@ html{scroll-behavior:smooth;background:var(--ground)}
 body{margin:0;background:var(--ground);color:var(--ink);font-family:"Gill Sans","Gill Sans MT",Jost,"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden}
 a{color:inherit}
 .mono{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
-.btn{display:inline-block;padding:17px 30px;border-radius:999px;background:var(--red);color:#fff;text-decoration:none;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.btn{display:inline-block;padding:22px 38px;border-radius:999px;background:var(--red);color:#fff;text-decoration:none;font-family:ui-monospace,Menlo,monospace;font-size:16px;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.band video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 h1{font-weight:300;font-size:clamp(44px,7vw,104px);line-height:.98;letter-spacing:-.015em;margin:0 0 20px;max-width:9em}
 h2{font-weight:300;font-size:clamp(32px,4.2vw,62px);line-height:1.04;letter-spacing:-.01em;margin:0 0 16px;max-width:12em}
 p{font-size:clamp(17px,1.4vw,22px);color:var(--dim);margin:0 0 12px;max-width:30em}
@@ -27,7 +28,7 @@ p strong{color:var(--ink);font-weight:400}
 @keyframes fadein{to{opacity:1}}
 @media(prefers-reduced-motion:reduce){#splash{display:none}}
 
-header{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:26px 5vw}
+header{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:18px 5vw;background:rgba(20,18,14,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.05)}
 header a.home{display:flex;align-items:center;gap:14px;text-decoration:none}
 header .word{font-size:17px;letter-spacing:.42em;color:var(--red);margin-left:.1em}
 nav{display:flex;gap:26px}
@@ -36,7 +37,7 @@ nav a:hover{color:var(--ink)}
 
 /* hero: the film edge to edge */
 .hero{position:relative;height:100svh;min-height:600px;overflow:hidden;background:#000}
-.hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%}
+.hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 62%}
 .hero .shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(20,18,14,.96) 0%,rgba(20,18,14,.55) 38%,rgba(20,18,14,0) 70%)}
 .hero .copy{position:absolute;left:5vw;right:5vw;bottom:7vh;z-index:2}
 .hero .cta{display:flex;gap:18px;align-items:center;margin-top:28px;flex-wrap:wrap}
@@ -56,9 +57,9 @@ nav a:hover{color:var(--ink)}
 
 /* the whole library: a strip of the three looks */
 .looks{padding:10vh 5vw 8vh}
-.looks .row{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6vw;margin-top:40px}
+.looks .row{display:grid;grid-template-columns:repeat(5,1fr);gap:1.2vw;margin-top:40px}
 .looks figure{margin:0}
-.looks img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block;border-radius:14px;box-shadow:0 30px 70px rgba(0,0,0,.5)}
+.looks img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;border-radius:14px;box-shadow:0 30px 70px rgba(0,0,0,.5)}
 .looks figcaption{margin-top:12px}
 
 /* price and privacy */
@@ -76,7 +77,7 @@ footer a{color:var(--dim)}
   .band{min-height:92svh}
   .band.right .copy{text-align:left;margin-left:0}
   .band.right p,.band.right h2{margin-left:0}
-  .looks .row{grid-template-columns:1fr}
+  .looks .row{grid-template-columns:1fr 1fr}
   .close{grid-template-columns:1fr}
 }
 </style></head>
@@ -113,13 +114,13 @@ footer a{color:var(--dim)}
 </section>
 
 <section class="band right">
-  <img src="/img/band-jelly.jpg" alt="A jellyfish video playing full screen with its frame scrubber">
+  <video src="/img/clip-jelly.mp4" poster="/img/band-jelly.jpg" autoplay muted loop playsinline></video>
   <div class="shade"></div>
   <div class="copy"><span class="mono">Video</span><h2>Videos live on the canvas too.</h2><p>They play where they sit as you pass over them. Open one and you get real frames to scrub, slow motion, a loop, and any frame saved as a picture.</p></div>
 </section>
 
 <section class="band">
-  <img src="/img/band-taxis.jpg" alt="A picture of yellow taxis opened full screen">
+  <video src="/img/clip-open.mp4" poster="/img/band-taxis.jpg" autoplay muted loop playsinline></video>
   <div class="shade"></div>
   <div class="copy"><span class="mono">Open</span><h2>Tap a picture and it grows out of its own tile.</h2><p>Swipe through its neighbours. Let it go and it settles back exactly where it was on the canvas.</p></div>
 </section>
@@ -130,8 +131,8 @@ footer a{color:var(--dim)}
   <div class="copy"><span class="mono">Files</span><h2>Folders become places.</h2><p>Hand over a folder from iCloud Drive, Google Drive or Dropbox. Folders become places on the canvas, documents become tiles.</p></div>
 </section>
 
-<section class="band top">
-  <img src="/img/band-poster.jpg" alt="Ten chosen pictures framed as a poster">
+<section class="band">
+  <img src="/img/poster.jpg" alt="Twelve pictures framed as one poster">
   <div class="shade"></div>
   <div class="copy"><span class="mono">Make</span><h2>Pick a few. Get a poster.</h2><p>Choose pictures straight off the canvas and the app frames them as one poster. Square, story or portrait; reorder, round the corners, choose a look. Print it or share it.</p></div>
 </section>
@@ -147,9 +148,11 @@ footer a{color:var(--dim)}
   <h2>Dark, medium or light. Or a look of your own.</h2>
   <p>The ground and its pattern, the accent, the panels, the buttons: every colour is yours. Keep up to five looks under their own names, a tap away.</p>
   <div class="row">
-    <figure><img src="/img/band-light-look.jpg" alt="The Light look"><figcaption class="mono">Light</figcaption></figure>
-    <figure><img src="/img/band-harbour-look.jpg" alt="A custom look called Harbour"><figcaption class="mono">Harbour, your own</figcaption></figure>
-    <figure><img src="/img/band-jellyfish-look.jpg" alt="A custom look called Jellyfish"><figcaption class="mono">Jellyfish, your own</figcaption></figure>
+    <figure><img src="/img/look-dark.jpg" alt="The Dark look"><figcaption class="mono">Dark</figcaption></figure>
+    <figure><img src="/img/look-medium.jpg" alt="The Medium look"><figcaption class="mono">Medium</figcaption></figure>
+    <figure><img src="/img/look-light.jpg" alt="The Light look"><figcaption class="mono">Light</figcaption></figure>
+    <figure><img src="/img/look-harbour.jpg" alt="A custom look called Harbour"><figcaption class="mono">Harbour, your own</figcaption></figure>
+    <figure><img src="/img/look-jellyfish.jpg" alt="A custom look called Jellyfish"><figcaption class="mono">Jellyfish, your own</figcaption></figure>
   </div>
 </section>
 

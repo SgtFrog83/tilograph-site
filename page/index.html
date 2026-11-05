@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tilograph</title>
+<meta name="description" content="Your whole library, on one canvas. Pinch out to see years at once, pinch in to one afternoon. Nothing leaves your phone.">
+<meta property="og:title" content="Tilograph"><meta property="og:description" content="Your whole library, on one canvas."><meta property="og:image" content="https://tilograph.app/img/band-ridge.jpg">
+<style>
+:root{--ground:#14120e;--red:#db3830;--ink:#ece8e0;--dim:#a8a298;--rule:#2a2721}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--ground)}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:"Gill Sans","Gill Sans MT",Jost,"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden}
+a{color:inherit}
+.mono{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.btn{display:inline-block;padding:22px 38px;border-radius:999px;background:var(--red);color:#fff;text-decoration:none;font-family:ui-monospace,Menlo,monospace;font-size:16px;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.band video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+h1{font-weight:300;font-size:clamp(44px,7vw,104px);line-height:.98;letter-spacing:-.015em;margin:0 0 20px;max-width:9em}
+h2{font-weight:300;font-size:clamp(32px,4.2vw,62px);line-height:1.04;letter-spacing:-.01em;margin:0 0 16px;max-width:12em}
+p{font-size:clamp(17px,1.4vw,22px);color:var(--dim);margin:0 0 12px;max-width:30em}
+p strong{color:var(--ink);font-weight:400}
+
+/* the mark arriving, as in the app */
+#splash{position:fixed;inset:0;z-index:50;background:var(--ground);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:22px;transition:opacity .8s ease}
+#splash.gone{opacity:0;pointer-events:none}
+#splash svg{width:min(140px,30vw);overflow:visible}
+#splash .piece{transform-box:fill-box;transform-origin:center;opacity:0;animation:arrive .75s cubic-bezier(.34,1.56,.64,1) forwards}
+#splash .p2{animation-delay:.15s}#splash .p3{animation-delay:.3s}#splash .p4{animation-delay:.45s}
+@keyframes arrive{from{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.3)}30%{opacity:1}to{opacity:1;transform:none}}
+#splash .word{font-size:clamp(16px,2.2vw,24px);letter-spacing:.5em;color:var(--red);margin-left:.5em;opacity:0;animation:fadein .9s ease .9s forwards}
+@keyframes fadein{to{opacity:1}}
+@media(prefers-reduced-motion:reduce){#splash{display:none}}
+
+header{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:18px 5vw;background:rgba(20,18,14,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.05)}
+header a.home{display:flex;align-items:center;gap:14px;text-decoration:none}
+header .word{font-size:17px;letter-spacing:.42em;color:var(--red);margin-left:.1em}
+nav{display:flex;gap:26px}
+nav a{color:var(--dim);font-size:12px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none}
+nav a:hover{color:var(--ink)}
+
+/* hero: the film edge to edge */
+.hero{position:relative;height:100svh;min-height:600px;overflow:hidden;background:#000}
+.hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 62%}
+.hero .shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(20,18,14,.96) 0%,rgba(20,18,14,.55) 38%,rgba(20,18,14,0) 70%)}
+.hero .copy{position:absolute;left:5vw;right:5vw;bottom:7vh;z-index:2}
+.hero .cta{display:flex;gap:18px;align-items:center;margin-top:28px;flex-wrap:wrap}
+.hero .cta small{color:var(--dim);font-size:14px;letter-spacing:.04em}
+
+/* a band: a still edge to edge, words over the bottom */
+.band{position:relative;min-height:88svh;overflow:hidden;background:#000;display:flex;align-items:flex-end}
+.band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.band .shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(20,18,14,.96) 0%,rgba(20,18,14,.5) 40%,rgba(20,18,14,0) 72%)}
+.band .copy{position:relative;z-index:2;padding:8vh 5vw 7vh}
+.band.right .copy{margin-left:auto;text-align:right}
+.band.right p,.band.right h2{margin-left:auto}
+.band .mono{display:block;margin-bottom:14px}
+.band.top{align-items:flex-start}
+.band.top .shade{background:linear-gradient(to bottom,rgba(20,18,14,.96) 0%,rgba(20,18,14,.5) 40%,rgba(20,18,14,0) 72%)}
+.band.top .copy{padding-top:10vh}
+
+/* the whole library: a strip of the three looks */
+.looks{padding:10vh 5vw 8vh}
+.looks .row{display:grid;grid-template-columns:repeat(5,1fr);gap:1.2vw;margin-top:40px}
+.looks figure{margin:0}
+.looks img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;border-radius:14px;box-shadow:0 30px 70px rgba(0,0,0,.5)}
+.looks figcaption{margin-top:12px}
+
+/* price and privacy */
+.close{padding:8vh 5vw 10vh;border-top:1px solid var(--rule);display:grid;grid-template-columns:1fr 1fr;gap:6vw;align-items:start}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px}
+.plan{border:1px solid var(--rule);border-radius:22px;padding:26px 24px}
+.plan b{display:block;font-weight:400;font-size:28px;margin-bottom:6px}
+.plan span{color:var(--dim);font-size:15px}
+.plan.hi{border-color:var(--red)}
+footer{padding:30px 5vw 60px;color:var(--dim);font-size:13px;letter-spacing:.06em;border-top:1px solid var(--rule)}
+footer a{color:var(--dim)}
+@media(max-width:860px){
+  nav{display:none}
+  .hero .copy{bottom:6vh}
+  .band{min-height:92svh}
+  .band.right .copy{text-align:left;margin-left:0}
+  .band.right p,.band.right h2{margin-left:0}
+  .looks .row{grid-template-columns:1fr 1fr}
+  .close{grid-template-columns:1fr}
+}
+</style></head>
+<body>
+
+<div id="splash" aria-hidden="true">
+  <svg viewBox="0 0 62 58" aria-label="Tilograph mark"><g fill="#db3830">
+    <rect class="piece p1" style="--dx:11px;--dy:18px" x="0" y="0" width="36.6" height="18" rx="1.6"/>
+    <rect class="piece p2" style="--dx:-18px;--dy:18px" x="39.6" y="0" width="22.4" height="18" rx="1.6"/>
+    <rect class="piece p3" style="--dx:0;--dy:-6px" x="21.5" y="21" width="19" height="21.1" rx="1.6"/>
+    <rect class="piece p4" style="--dx:0;--dy:-22px" x="21.5" y="45.1" width="19" height="12.9" rx="1.6"/>
+  </g></svg>
+  <div class="word">TILOGRAPH</div>
+</div>
+
+<header><a class="home" href="/"><svg viewBox="0 0 62 58" width="28" aria-label="Tilograph mark"><g fill="#db3830"><rect x="0" y="0" width="36.6" height="18" rx="1.6"/><rect x="39.6" y="0" width="22.4" height="18" rx="1.6"/><rect x="21.5" y="21" width="19" height="21.1" rx="1.6"/><rect x="21.5" y="45.1" width="19" height="12.9" rx="1.6"/></g></svg><span class="word">TILOGRAPH</span></a>
+<nav><a href="/canvas/">Canvas version</a><a href="#see">See</a><a href="#looks">Looks</a><a href="#price">Price</a><a href="/privacy/">Privacy</a><a href="/support/">Support</a></nav></header>
+
+<section class="hero">
+  <video id="hero" poster="/img/hero-poster.jpg" muted loop playsinline preload="auto"><source src="/img/hero.mp4" media="(min-width: 1100px)" type="video/mp4"><source src="/img/hero-sm.mp4" type="video/mp4"></video>
+  <div class="shade"></div>
+  <div class="copy">
+    <span class="mono">For iPhone and iPad</span>
+    <h1>Your whole library, on one canvas.</h1>
+    <p>Every picture, video and file you own becomes a tile. <strong>Pinch out</strong> and you see years at once. <strong>Pinch in</strong> and you are inside one afternoon.</p>
+    <div class="cta"><a class="btn" href="https://apps.apple.com/app/id6824810899">Get it on the App Store</a><small>Free for your most recent month.</small></div>
+  </div>
+</section>
+
+<section class="band" id="see">
+  <img src="/img/band-ridge.jpg" alt="A close zoom on a mountain ridge, its neighbours around it">
+  <div class="shade"></div>
+  <div class="copy"><span class="mono">See</span><h2>Every zoom is a real zoom.</h2><p>Pinch towards any patch of the canvas and the pictures there come up sharp, with their neighbours around them. No list, no album to open first.</p></div>
+</section>
+
+<section class="band right">
+  <video src="/img/clip-jelly.mp4" poster="/img/band-jelly.jpg" autoplay muted loop playsinline></video>
+  <div class="shade"></div>
+  <div class="copy"><span class="mono">Video</span><h2>Videos live on the canvas too.</h2><p>They play where they sit as you pass over them. Open one and you get real frames to scrub, slow motion, a loop, and any frame saved as a picture.</p></div>
+</section>
+
+<section class="band">
+  <video src="/img/clip-open.mp4" poster="/img/band-taxis.jpg" autoplay muted loop playsinline></video>
+  <div class="shade"></div>
+  <div class="copy"><span class="mono">Open</span><h2>Tap a picture and it grows out of its own tile.</h2><p>Swipe through its neighbours. Let it go and it settles back exactly where it was on the canvas.</p></div>
+</section>
+
+<section class="band right">
+  <img src="/img/band-files.jpg" alt="A folder of documents and decks laid out as tiles">
+  <div class="shade"></div>
+  <div class="copy"><span class="mono">Files</span><h2>Folders become places.</h2><p>Hand over a folder from iCloud Drive, Google Drive or Dropbox. Folders become places on the canvas, documents become tiles.</p></div>
+</section>
+
+<section class="band">
+  <img src="/img/poster.jpg" alt="Twelve pictures framed as one poster">
+  <div class="shade"></div>
+  <div class="copy"><span class="mono">Make</span><h2>Pick a few. Get a poster.</h2><p>Choose pictures straight off the canvas and the app frames them as one poster. Square, story or portrait; reorder, round the corners, choose a look. Print it or share it.</p></div>
+</section>
+
+<section class="band right">
+  <img src="/img/band-select.jpg" alt="Pictures being chosen on the canvas with search matches lit">
+  <div class="shade"></div>
+  <div class="copy"><span class="mono">Find</span><h2>Type “beach 2019” and watch them light up.</h2><p>Faces, subjects, places and colours are read on your device. Matches light where they sit, so you see <strong>when and where</strong> they belong. Lookalikes and duplicates are found for you.</p></div>
+</section>
+
+<section class="looks" id="looks">
+  <span class="mono">Make it yours</span>
+  <h2>Dark, medium or light. Or a look of your own.</h2>
+  <p>The ground and its pattern, the accent, the panels, the buttons: every colour is yours. Keep up to five looks under their own names, a tap away.</p>
+  <div class="row">
+    <figure><img src="/img/look-dark.jpg" alt="The Dark look"><figcaption class="mono">Dark</figcaption></figure>
+    <figure><img src="/img/look-medium.jpg" alt="The Medium look"><figcaption class="mono">Medium</figcaption></figure>
+    <figure><img src="/img/look-light.jpg" alt="The Light look"><figcaption class="mono">Light</figcaption></figure>
+    <figure><img src="/img/look-harbour.jpg" alt="A custom look called Harbour"><figcaption class="mono">Harbour, your own</figcaption></figure>
+    <figure><img src="/img/look-jellyfish.jpg" alt="A custom look called Jellyfish"><figcaption class="mono">Jellyfish, your own</figcaption></figure>
+  </div>
+</section>
+
+<section class="close" id="price">
+  <div><span class="mono">Private by design</span><h2>Nothing leaves your phone.</h2><p>Faces, subjects and places are read on the device with Apple's own frameworks. No account, no server, no analytics. <a href="/privacy/">The whole policy</a> fits on one page.</p></div>
+  <div><span class="mono">Price</span><h2>Free for your most recent month.</h2><p>One poster and one folder come free. The rest of your years open with one purchase, or by the year.</p>
+    <div class="plans"><div class="plan hi"><b>Unlock forever</b><span>One purchase. Every picture you have ever taken, for good.</span></div><div class="plan"><b>A year</b><span>The same, by the year.</span></div></div>
+    <p style="margin-top:28px"><a class="btn" href="https://apps.apple.com/app/id6824810899">Get it on the App Store</a></p>
+  </div>
+</section>
+
+<footer>© 2026 Black Lykhen Co., Ltd. · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a> · <a href="mailto:support@blacklykhen.com">support@blacklykhen.com</a></footer>
+
+<script>
+(function(){
+  var s=document.getElementById('splash'), v=document.getElementById('hero');
+  var reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function go(){ if(!s.classList.contains('gone')){ s.classList.add('gone'); } try{ v.currentTime=4.6; }catch(e){} v.play().catch(function(){}); }
+  if(reduced){ go(); return; }
+  // The mark arrives piece by piece, the name follows, and the canvas
+  // comes up under it, as it does in the app.
+  setTimeout(go, 2600);
+})();
+</script>
+</body></html>

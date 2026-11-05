@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tilograph</title><style>
+:root{--ground:#14120e;--red:#db3830;--ink:#ece8e0;--dim:#9a948a;--rule:#2a2721}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ground);color:var(--ink);font-family:"Gill Sans","Gill Sans MT",Jost,"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;position:relative}
+body.lattice::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2252%22%20height%3D%2290.067%22%20viewBox%3D%220%200%2052%2090.067%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C.042%29%22%20stroke-width%3D%221%22%3E%3Cpath%20d%3D%22M0%200H52M0%2045.033H52M0%2090.067H52%22/%3E%3Cpath%20d%3D%22M0%200L26.0%2045.033L0%2090.067M52%200L26.0%2045.033L52%2090.067%22/%3E%3C/g%3E%3Cpath%20d%3D%22M0%20-3.2%20L2.8%201.6%20L-2.8%201.6Z%22%20fill%3D%22rgba%28255%2C255%2C255%2C.08%29%22/%3E%3Cpath%20d%3D%22M52%20-3.2%20L54.8%201.6%20L49.2%201.6Z%22%20fill%3D%22rgba%28255%2C255%2C255%2C.08%29%22/%3E%3Cpath%20d%3D%22M26.0%2041.833320799999996%20L28.8%2046.6333208%20L23.2%2046.6333208Z%22%20fill%3D%22rgba%28255%2C255%2C255%2C.08%29%22/%3E%3Cpath%20d%3D%22M0%2086.8666416%20L2.8%2091.66664159999999%20L-2.8%2091.66664159999999Z%22%20fill%3D%22rgba%28255%2C255%2C255%2C.08%29%22/%3E%3Cpath%20d%3D%22M52%2086.8666416%20L54.8%2091.66664159999999%20L49.2%2091.66664159999999Z%22%20fill%3D%22rgba%28255%2C255%2C255%2C.08%29%22/%3E%3Cpath%20d%3D%22M78.0%2041.833320799999996%20L80.8%2046.6333208%20L75.2%2046.6333208Z%22%20fill%3D%22rgba%28255%2C255%2C255%2C.08%29%22/%3E%3C/svg%3E");background-size:52px 90.067px}
+.wrap{position:relative;max-width:720px;margin:0 auto;padding:72px 28px 96px}
+header{display:flex;align-items:center;gap:18px;margin-bottom:56px}
+header a{display:flex;align-items:center;gap:18px;text-decoration:none;color:inherit}
+.word{font-size:22px;letter-spacing:.42em;color:var(--red);font-weight:300;margin-left:.1em}
+nav{margin-left:auto;display:flex;gap:22px}
+nav a{color:var(--dim);text-decoration:none;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+nav a:hover,nav a.on{color:var(--ink)}
+h1{font-weight:300;font-size:40px;letter-spacing:.01em;line-height:1.1;margin:0 0 18px}
+h2{font-weight:400;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin:44px 0 12px}
+p,li{font-size:18px;line-height:1.55;color:var(--ink);margin:0 0 14px}
+.lede{font-size:22px;color:var(--ink);max-width:560px}
+.mono{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+hr{border:0;border-top:1px solid var(--rule);margin:40px 0}
+a.btn{display:inline-block;margin-top:26px;padding:16px 26px;border-radius:999px;background:var(--red);color:#fff;text-decoration:none;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 32px;margin-top:28px}
+.grid div p{font-size:16px;color:var(--dim)}
+.grid div b{display:block;font-weight:400;font-size:17px;color:var(--ink);margin-bottom:4px}
+dl dt{font-weight:400;font-size:18px;margin-top:22px}
+dl dd{margin:6px 0 0;font-size:17px;color:var(--dim);line-height:1.5}
+footer{margin-top:72px;color:var(--dim);font-size:13px;letter-spacing:.06em}
+footer a{color:var(--dim)}
+.shots{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:26px}
+.shots img{width:100%;display:block;border-radius:22px;background:#000}
+.shots figcaption{margin-top:8px;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:center}
+.shots figure{margin:0}
+@media(max-width:600px){.shots{grid-template-columns:1fr 1fr}}
+.hero{text-align:center;padding:40px 0 10px}
+.hero .word{display:block;margin:22px 0 0;font-size:28px}
+.hero .lede{margin:22px auto 0}
+@media(max-width:600px){h1{font-size:32px}.grid{grid-template-columns:1fr}.wrap{padding:48px 22px 72px}nav{gap:14px}}
+</style></head>
+<body class="lattice"><div class="wrap">
+<div class="hero"><svg class="mark" viewBox="0 0 62 58" width="120" aria-label="Tilograph mark"><g fill="#db3830"><rect x="0" y="0" width="36.6" height="18" rx="1.6"/><rect x="39.6" y="0" width="22.4" height="18" rx="1.6"/><rect x="21.5" y="21" width="19" height="21.1" rx="1.6"/><rect x="21.5" y="45.1" width="19" height="12.9" rx="1.6"/></g></svg><span class="word">TILOGRAPH</span>
+<p class="lede">Your pictures, videos and files, tiled on a canvas.</p>
+<a class="btn" href="https://apps.apple.com/app/id6824810899">Get it on the App Store</a></div>
+<hr>
+<div class="grid">
+<div><b>One canvas</b><p>Pinch out and see years at once. Pinch in and you are inside one afternoon. No list, no album to open first.</p></div>
+<div><b>Arranged your way</b><p>By date, place, person, subject, colour, likeness or album. One tap, and the canvas lays itself out again.</p></div>
+<div><b>Find anything</b><p>Type “beach 2019”, “dog” or a place. Matches light up where they sit, so you see when and where they belong.</p></div>
+<div><b>Tidy up</b><p>Lookalikes and duplicates found for you. Compare, keep the best, send the rest to Recently Deleted.</p></div>
+<div><b>Files too</b><p>Hand over a folder from iCloud Drive, Google Drive or Dropbox. Folders become places, documents become tiles.</p></div>
+<div><b>Private by design</b><p>Faces, subjects and places are read on your device. Nothing is sent anywhere. There is no account.</p></div>
+</div>
+<hr>
+<h2>Make it yours</h2>
+<p class="lede">Dark, medium or light. Or a look of your own.</p>
+<p>The ground and its pattern, the accent, the panels, the buttons: every colour is yours to set. Keep a look under its own name and it sits beside the three that come with the app, a tap away. Up to five custom themes, and every change can be undone, step by step.</p>
+<div class="shots">
+<figure><img src="img/look-dark.jpg" alt="Tilograph in the Dark look" loading="lazy"><figcaption>Dark</figcaption></figure>
+<figure><img src="img/look-light.jpg" alt="Tilograph in the Light look" loading="lazy"><figcaption>Light</figcaption></figure>
+<figure><img src="img/look-harbour.jpg" alt="Tilograph in a custom look called Harbour" loading="lazy"><figcaption>Harbour, your own</figcaption></figure>
+<figure><img src="img/look-saved.jpg" alt="Settings, with two saved custom looks" loading="lazy"><figcaption>Saved under a name</figcaption></figure>
+</div>
+<hr>
+<p class="mono">Free for your most recent month, one poster and one folder. One purchase unlocks the full app for good, or take it by the year.</p>
+
+<footer>© 2026 Black Lykhen Co., Ltd. · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a> · <a href="mailto:support@blacklykhen.com">support@blacklykhen.com</a></footer>
+</div></body></html>

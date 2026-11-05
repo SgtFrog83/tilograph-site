@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Tilograph · the canvas</title>
+<meta name="description" content="Your whole library, on one canvas. This page is one too: drag to move, pinch or scroll to zoom.">
+<style>
+:root{--ground:#14120e;--red:#db3830;--ink:#ece8e0;--dim:#a8a298;--rule:#2a2721;--plate:#1d1a17}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--ground);color:var(--ink);font-family:"Gill Sans","Gill Sans MT",Jost,"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;touch-action:none;overscroll-behavior:none}
+a{color:inherit}
+.mono{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+#stage{position:fixed;inset:0;cursor:grab;background-image:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2252%22%20height%3D%2290.067%22%20viewBox%3D%220%200%2052%2090.067%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C.05%29%22%20stroke-width%3D%221%22%3E%3Cpath%20d%3D%22M0%200H52M0%2045.033H52M0%2090.067H52%22/%3E%3Cpath%20d%3D%22M0%200L26.0%2045.033L0%2090.067M52%200L26.0%2045.033L52%2090.067%22/%3E%3C/g%3E%3C/svg%3E")}
+#stage.dragging{cursor:grabbing}
+#world{position:absolute;left:0;top:0;width:6400px;height:5400px;transform-origin:0 0;will-change:transform}
+.tile{position:absolute;overflow:hidden;border-radius:18px;background:#000;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.tile img,.tile video{width:100%;height:100%;object-fit:cover;display:block}
+.tag{position:absolute;font-family:ui-monospace,Menlo,monospace;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);background:rgba(20,18,14,.85);padding:7px 12px;border-radius:999px;white-space:nowrap}
+.words{position:absolute;max-width:720px}
+.words h2{font-weight:300;font-size:56px;line-height:1.04;letter-spacing:-.01em;margin:0 0 14px}
+.words p{font-size:22px;color:var(--dim);margin:0;line-height:1.5}
+.words p strong{color:var(--ink);font-weight:400}
+.hero{position:absolute;left:2250px;top:1700px;width:1900px}
+.hero .word{font-size:26px;letter-spacing:.5em;color:var(--red);margin-left:.5em}
+.hero h1{font-weight:300;font-size:120px;line-height:.96;letter-spacing:-.015em;margin:14px 0 22px;max-width:9em}
+.hero p{font-size:28px;color:var(--dim);max-width:24em;margin:0 0 30px}
+.btn{display:inline-block;padding:20px 34px;border-radius:999px;background:var(--red);color:#fff;text-decoration:none;font-family:ui-monospace,Menlo,monospace;font-size:14px;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.plan{position:absolute;width:520px;border:1px solid var(--rule);border-radius:22px;padding:26px 24px;background:var(--plate)}
+.plan b{display:block;font-weight:400;font-size:30px;margin-bottom:6px}
+.plan span{color:var(--dim);font-size:17px}
+.plan.hi{border-color:var(--red)}
+/* chrome over the canvas */
+#top{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:20px 24px;pointer-events:none}
+#top a{pointer-events:auto;text-decoration:none;display:flex;align-items:center;gap:12px}
+#top .word{font-size:15px;letter-spacing:.42em;color:var(--red)}
+#top .flat{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+#bar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:5;display:flex;gap:6px;padding:6px;background:rgba(29,26,23,.9);border:1px solid var(--rule);border-radius:999px;backdrop-filter:blur(12px);max-width:calc(100vw - 24px);overflow-x:auto}
+#bar button{background:transparent;border:0;color:var(--dim);font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:10px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
+#bar button:hover,#bar button.on{color:var(--ink);background:rgba(255,255,255,.06)}
+#bar button.red{color:#fff;background:var(--red)}
+#hint{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);z-index:5;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);transition:opacity .6s;pointer-events:none}
+#hint.gone{opacity:0}
+#splash{position:fixed;inset:0;z-index:50;background:var(--ground);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:22px;transition:opacity .8s ease}
+#splash.gone{opacity:0;pointer-events:none}
+#splash svg{width:min(140px,30vw);overflow:visible}
+#splash .piece{transform-box:fill-box;transform-origin:center;opacity:0;animation:arrive .75s cubic-bezier(.34,1.56,.64,1) forwards}
+#splash .p2{animation-delay:.15s}#splash .p3{animation-delay:.3s}#splash .p4{animation-delay:.45s}
+@keyframes arrive{from{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.3)}30%{opacity:1}to{opacity:1;transform:none}}
+#splash .word{font-size:clamp(16px,2.2vw,24px);letter-spacing:.5em;color:var(--red);margin-left:.5em;opacity:0;animation:fadein .9s ease .9s forwards}
+@keyframes fadein{to{opacity:1}}
+@media(max-width:700px){#top .flat{display:none}}
+</style></head>
+<body>
+<div id="splash" aria-hidden="true">
+  <svg viewBox="0 0 62 58"><g fill="#db3830">
+    <rect class="piece p1" style="--dx:11px;--dy:18px" x="0" y="0" width="36.6" height="18" rx="1.6"/>
+    <rect class="piece p2" style="--dx:-18px;--dy:18px" x="39.6" y="0" width="22.4" height="18" rx="1.6"/>
+    <rect class="piece p3" style="--dx:0;--dy:-6px" x="21.5" y="21" width="19" height="21.1" rx="1.6"/>
+    <rect class="piece p4" style="--dx:0;--dy:-22px" x="21.5" y="45.1" width="19" height="12.9" rx="1.6"/>
+  </g></svg>
+  <div class="word">TILOGRAPH</div>
+</div>
+
+<div id="top"><a href="/canvas/"><svg viewBox="0 0 62 58" width="26"><g fill="#db3830"><rect x="0" y="0" width="36.6" height="18" rx="1.6"/><rect x="39.6" y="0" width="22.4" height="18" rx="1.6"/><rect x="21.5" y="21" width="19" height="21.1" rx="1.6"/><rect x="21.5" y="45.1" width="19" height="12.9" rx="1.6"/></g></svg><span class="word">TILOGRAPH</span></a><a class="flat" href="/">The page version</a></div>
+
+<div id="stage"><div id="world">
+
+  <!-- SEE -->
+  <div class="tile" data-sec="see" style="left:200px;top:260px;width:1700px;height:1275px"><img src="/img/band-ridge.jpg" alt="A close zoom on a mountain ridge"></div>
+  <span class="tag" style="left:200px;top:210px">December 2024 · see</span>
+  <div class="words" style="left:200px;top:1570px;width:1700px"><h2>Every zoom is a real zoom.</h2><p>Pinch towards any patch of the canvas and the pictures there come up sharp, with their neighbours around them. No list, no album to open first.</p></div>
+
+  <!-- FIND -->
+  <div class="tile" data-sec="find" style="left:2300px;top:200px;width:1800px;height:1350px"><img src="/img/band-select.jpg" alt="Pictures chosen on the canvas, matches lit"></div>
+  <span class="tag" style="left:2300px;top:150px">July 2026 · find</span>
+  <div class="words" style="left:2300px;top:1580px;width:1800px"><h2>Type “beach 2019” and watch them light up.</h2><p>Faces, subjects, places and colours are read on your device. Matches light where they sit, so you see <strong>when and where</strong> they belong.</p></div>
+
+  <!-- VIDEO -->
+  <div class="tile" data-sec="video" style="left:4500px;top:260px;width:1700px;height:1275px"><img src="/img/band-jelly.jpg" alt="A jellyfish video playing full screen"></div>
+  <span class="tag" style="left:4500px;top:210px">September 2026 · video</span>
+  <div class="words" style="left:4500px;top:1570px;width:1700px"><h2>Videos live on the canvas too.</h2><p>They play where they sit as you pass over them. Open one and you get real frames to scrub, slow motion, a loop, any frame saved as a picture.</p></div>
+
+  <!-- HERO -->
+  <div class="hero" data-sec="hero"><div class="word">TILOGRAPH</div><h1>Your whole library, on one canvas.</h1><p>Every picture, video and file you own becomes a tile. <strong style="color:var(--ink);font-weight:400">Pinch out</strong> and you see years at once. <strong style="color:var(--ink);font-weight:400">Pinch in</strong> and you are inside one afternoon. This page works the same way: drag to move, pinch or scroll to zoom.</p><a class="btn" href="https://apps.apple.com/app/id6824810899">Get it on the App Store</a></div>
+  <div class="tile" style="left:200px;top:2000px;width:1700px;height:2267px"><video src="/img/hero-sm.mp4" poster="/img/hero-poster.jpg" muted loop playsinline autoplay></video></div>
+  <span class="tag" style="left:200px;top:1950px">The walkthrough · 30 seconds</span>
+
+  <!-- OPEN -->
+  <div class="tile" data-sec="open" style="left:4500px;top:1900px;width:1700px;height:1275px"><img src="/img/band-taxis.jpg" alt="A picture of taxis opened full screen"></div>
+  <span class="tag" style="left:4500px;top:1850px">May 2025 · open</span>
+  <div class="words" style="left:4500px;top:3210px;width:1700px"><h2>Tap a picture and it grows out of its own tile.</h2><p>Swipe through its neighbours. Let it go and it settles back exactly where it was.</p></div>
+
+  <!-- MAKE -->
+  <div class="tile" data-sec="make" style="left:2300px;top:2950px;width:1800px;height:1350px"><img src="/img/band-poster.jpg" alt="Chosen pictures framed as a poster"></div>
+  <span class="tag" style="left:2300px;top:2900px">July 2026 · make</span>
+  <div class="words" style="left:2300px;top:4330px;width:1800px"><h2>Pick a few. Get a poster.</h2><p>Choose pictures straight off the canvas and the app frames them as one poster. Square, story or portrait; reorder, round the corners, choose a look. Print it or share it.</p></div>
+
+  <!-- FILES -->
+  <div class="tile" data-sec="files" style="left:4500px;top:3650px;width:1700px;height:1275px"><img src="/img/band-files.jpg" alt="A folder of documents laid out as tiles"></div>
+  <span class="tag" style="left:4500px;top:3600px">Files · Nike</span>
+  <div class="words" style="left:4500px;top:4960px;width:1700px"><h2>Folders become places.</h2><p>Hand over a folder from iCloud Drive, Google Drive or Dropbox. Folders become places on the canvas, documents become tiles.</p></div>
+
+  <!-- LOOKS -->
+  <span class="tag" style="left:200px;top:4430px">Make it yours</span>
+  <div class="tile" data-sec="looks" style="left:200px;top:4480px;width:540px;height:360px"><img src="/img/band-light-look.jpg" alt="Light look"></div>
+  <div class="tile" style="left:780px;top:4480px;width:540px;height:360px"><img src="/img/band-harbour-look.jpg" alt="Harbour look"></div>
+  <div class="tile" style="left:1360px;top:4480px;width:540px;height:360px"><img src="/img/band-jellyfish-look.jpg" alt="Jellyfish look"></div>
+  <div class="words" style="left:200px;top:4880px;width:1700px"><h2 style="font-size:44px">Dark, medium or light. Or a look of your own.</h2><p>Every colour is yours. Keep up to five looks under their own names, a tap away.</p></div>
+
+  <!-- PRICE -->
+  <span class="tag" style="left:2300px;top:4640px">Price · private by design</span>
+  <div class="plan hi" data-sec="price" style="left:2300px;top:4690px"><b>Unlock forever</b><span>One purchase. Every picture you have ever taken, for good.</span></div>
+  <div class="plan" style="left:2860px;top:4690px"><b>A year</b><span>The same, by the year.</span></div>
+  <div class="words" style="left:2300px;top:4900px;width:1800px"><p>Free for your most recent month, one poster and one folder. Faces, subjects and places are read on the device; nothing leaves your phone. <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a> · © 2026 Black Lykhen Co., Ltd.</p></div>
+
+</div></div>
+
+<div id="hint">Drag to move · scroll or pinch to zoom · double-tap to get closer</div>
+<div id="bar">
+  <button data-go="all">Everything</button>
+  <button data-go="hero" class="red">Start</button>
+  <button data-go="see">See</button>
+  <button data-go="video">Video</button>
+  <button data-go="open">Open</button>
+  <button data-go="find">Find</button>
+  <button data-go="make">Make</button>
+  <button data-go="files">Files</button>
+  <button data-go="looks">Looks</button>
+  <button data-go="price">Price</button>
+</div>
+
+<script>
+(function(){
+  var stage=document.getElementById('stage'), world=document.getElementById('world');
+  var W=6400, H=5400, s=1, tx=0, ty=0, anim=null;
+  function vw(){return innerWidth} function vh(){return innerHeight}
+  function apply(){ world.style.transform='translate('+tx+'px,'+ty+'px) scale('+s+')'; }
+  function clampView(){
+    s=Math.max(0.06,Math.min(2.5,s));
+    var minX=vw()-W*s-200*s, maxX=200*s, minY=vh()-H*s-200*s, maxY=200*s;
+    if(W*s<vw()){ tx=(vw()-W*s)/2; } else { tx=Math.min(maxX,Math.max(minX,tx)); }
+    if(H*s<vh()){ ty=(vh()-H*s)/2; } else { ty=Math.min(maxY,Math.max(minY,ty)); }
+  }
+  function set(ns,ntx,nty){ s=ns; tx=ntx; ty=nty; clampView(); apply(); }
+  // the sections, as rectangles of the world
+  var secs={
+    all:{x:0,y:0,w:W,h:H},
+    hero:{x:2250,y:1650,w:1900,h:1250},
+    see:{x:200,y:200,w:1700,h:1700},
+    find:{x:2300,y:140,w:1800,h:1760},
+    video:{x:4500,y:200,w:1700,h:1700},
+    open:{x:4500,y:1840,w:1700,h:1660},
+    make:{x:2300,y:2890,w:1800,h:1760},
+    files:{x:4500,y:3590,w:1700,h:1700},
+    looks:{x:200,y:4420,w:1700,h:800},
+    price:{x:2300,y:4630,w:1800,h:600}
+  };
+  function targetFor(r,pad){ var ns=Math.min(vw()/(r.w*pad), vh()/(r.h*pad)); ns=Math.min(1.6,ns); return {s:ns, tx:vw()/2-(r.x+r.w/2)*ns, ty:vh()/2-(r.y+r.h/2)*ns}; }
+  function fly(to,ms){
+    if(anim) cancelAnimationFrame(anim);
+    var from={s:s,tx:tx,ty:ty}, t0=performance.now();
+    // the centre of the screen travels while the zoom moves in log space, as the app's glide does
+    var cx0=(vw()/2-from.tx)/from.s, cy0=(vh()/2-from.ty)/from.s;
+    var cx1=(vw()/2-to.tx)/to.s, cy1=(vh()/2-to.ty)/to.s;
+    function step(now){
+      var t=Math.min(1,(now-t0)/ms), e=t*t*(3-2*t);
+      var ns=Math.exp(Math.log(from.s)+(Math.log(to.s)-Math.log(from.s))*e);
+      var cx=cx0+(cx1-cx0)*e, cy=cy0+(cy1-cy0)*e;
+      s=ns; tx=vw()/2-cx*ns; ty=vh()/2-cy*ns; apply();
+      if(t<1) anim=requestAnimationFrame(step); else { anim=null; clampView(); apply(); }
+    }
+    anim=requestAnimationFrame(step);
+  }
+  function go(name){ var r=secs[name]; if(!r) return; fly(targetFor(r, name==='all'?1.06:1.12), name==='all'?1200:1000); mark(name); }
+  function mark(name){ document.querySelectorAll('#bar button').forEach(function(b){ b.classList.toggle('on', b.dataset.go===name); }); }
+  document.querySelectorAll('#bar button').forEach(function(b){ b.addEventListener('click', function(){ go(b.dataset.go); }); });
+
+  // wheel: zoom at the pointer; with shift, pan
+  stage.addEventListener('wheel', function(e){
+    e.preventDefault(); if(anim){cancelAnimationFrame(anim);anim=null;}
+    hideHint();
+    if(e.shiftKey && !e.ctrlKey){ set(s, tx-e.deltaX, ty-e.deltaY); return; }
+    var k=Math.exp(-e.deltaY*(e.ctrlKey?0.01:0.0016));
+    var ns=Math.max(0.06,Math.min(2.5,s*k));
+    var px=e.clientX, py=e.clientY;
+    tx=px-(px-tx)*(ns/s); ty=py-(py-ty)*(ns/s); s=ns; clampView(); apply();
+  },{passive:false});
+  // drag and pinch
+  var pts=new Map(), last=null, pinch=null;
+  stage.addEventListener('pointerdown', function(e){ stage.setPointerCapture(e.pointerId); pts.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(anim){cancelAnimationFrame(anim);anim=null;} if(pts.size===1){ last={x:e.clientX,y:e.clientY,moved:0}; stage.classList.add('dragging'); } if(pts.size===2){ var a=[...pts.values()]; pinch={d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y), s:s, cx:(a[0].x+a[1].x)/2, cy:(a[0].y+a[1].y)/2, tx:tx, ty:ty}; } });
+  stage.addEventListener('pointermove', function(e){ if(!pts.has(e.pointerId)) return; pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pts.size===2 && pinch){ var a=[...pts.values()]; var d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y); var ns=Math.max(0.06,Math.min(2.5,pinch.s*d/pinch.d)); var cx=(a[0].x+a[1].x)/2, cy=(a[0].y+a[1].y)/2; tx=cx-(pinch.cx-pinch.tx)*(ns/pinch.s); ty=cy-(pinch.cy-pinch.ty)*(ns/pinch.s); s=ns; clampView(); apply(); hideHint(); return; }
+    if(pts.size===1 && last){ var dx=e.clientX-last.x, dy=e.clientY-last.y; last.moved+=Math.abs(dx)+Math.abs(dy); last.x=e.clientX; last.y=e.clientY; set(s,tx+dx,ty+dy); if(last.moved>6) hideHint(); } });
+  function up(e){ pts.delete(e.pointerId); if(pts.size<2) pinch=null; if(pts.size===0){ stage.classList.remove('dragging'); last=null; } }
+  stage.addEventListener('pointerup', up); stage.addEventListener('pointercancel', up);
+  // a double tap gets closer, on the spot
+  stage.addEventListener('dblclick', function(e){ var ns=Math.min(2.5,s*2); var px=e.clientX, py=e.clientY; var to={s:ns, tx:px-(px-tx)*(ns/s), ty:py-(py-ty)*(ns/s)}; fly(to,600); });
+  // links and buttons inside the world still work; a drag over them does not click
+  world.addEventListener('click', function(e){ if(last && last.moved>6){ e.preventDefault(); } }, true);
+  addEventListener('keydown', function(e){ var step=80; if(e.key==='ArrowLeft') set(s,tx+step,ty); if(e.key==='ArrowRight') set(s,tx-step,ty); if(e.key==='ArrowUp') set(s,tx,ty+step); if(e.key==='ArrowDown') set(s,tx,ty-step); if(e.key==='+'||e.key==='=') fly({s:s*1.4,tx:vw()/2-((vw()/2-tx)/s)*s*1.4,ty:vh()/2-((vh()/2-ty)/s)*s*1.4},400); if(e.key==='-') fly({s:s/1.4,tx:vw()/2-((vw()/2-tx)/s)*s/1.4,ty:vh()/2-((vh()/2-ty)/s)*s/1.4},400); if(e.key==='0') go('all'); });
+  addEventListener('resize', function(){ clampView(); apply(); });
+  var hint=document.getElementById('hint'); function hideHint(){ hint.classList.add('gone'); }
+
+  // the first open, as in the app: the whole canvas, a breath, then in to the start
+  var all=targetFor(secs.all,1.06); set(all.s,all.tx,all.ty);
+  var splash=document.getElementById('splash');
+  var reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function begin(){ splash.classList.add('gone'); setTimeout(function(){ go('hero'); }, reduced?0:1400); }
+  if(reduced){ begin(); } else { setTimeout(begin, 2600); }
+})();
+</script>
+</body></html>

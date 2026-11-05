@@ -8,14 +8,14 @@
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:#000;color:var(--ink);font-family:"Gill Sans","Gill Sans MT",Jost,"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;overflow:hidden}
 a{color:inherit}
-.stage{position:fixed;inset:0;background:#000}
-.stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 60%}
-.shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(20,18,14,.92) 0%,rgba(20,18,14,.45) 34%,rgba(20,18,14,0) 62%)}
+.film-stage{position:fixed;inset:0;background:#000}
+.film-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 60%}
+.veil{position:absolute;inset:0;background:linear-gradient(to top,rgba(20,18,14,.92) 0%,rgba(20,18,14,.45) 34%,rgba(20,18,14,0) 62%)}
 header{position:absolute;top:0;left:0;right:0;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:22px 5vw}
 header a.home{display:flex;align-items:center;gap:12px;text-decoration:none}
 header .word{font-size:16px;letter-spacing:.42em;color:var(--red)}
-#sound{background:rgba(20,18,14,.55);border:1px solid rgba(255,255,255,.14);color:var(--ink);border-radius:999px;padding:11px 18px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(10px)}
-.copy{position:absolute;left:5vw;right:5vw;bottom:9vh;z-index:3}
+#hear{background:rgba(20,18,14,.55);border:1px solid rgba(255,255,255,.14);color:var(--ink);border-radius:999px;padding:11px 18px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(10px)}
+.lede-block{position:absolute;left:5vw;right:5vw;bottom:9vh;z-index:3}
 .mono{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
 h1{font-weight:300;font-size:clamp(42px,6.4vw,96px);line-height:.98;letter-spacing:-.015em;margin:10px 0 18px;max-width:9em}
 p{font-size:clamp(17px,1.4vw,22px);color:var(--dim);margin:0 0 26px;max-width:30em}
@@ -26,15 +26,15 @@ p strong{color:var(--ink);font-weight:400}
 footer{position:absolute;left:5vw;right:5vw;bottom:22px;z-index:3;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
 footer a{text-decoration:none}
 footer a:hover{color:var(--ink)}
-@media(max-width:700px){.copy{bottom:12vh}footer{justify-content:center;text-align:center}}
+@media(max-width:700px){.lede-block{bottom:12vh}footer{justify-content:center;text-align:center}}
 </style></head>
 <body>
-<div class="stage">
+<div class="film-stage">
   <video id="film" poster="/img/hero-poster.jpg" autoplay muted loop playsinline preload="auto"><source src="/img/hero.mp4" media="(min-width: 1100px)" type="video/mp4"><source src="/img/hero-sm.mp4" type="video/mp4"></video>
-  <div class="shade"></div>
+  <div class="veil"></div>
 </div>
-<header><a class="home" href="/"><svg viewBox="0 0 62 58" width="28"><g fill="#db3830"><rect x="0" y="0" width="36.6" height="18" rx="1.6"/><rect x="39.6" y="0" width="22.4" height="18" rx="1.6"/><rect x="21.5" y="21" width="19" height="21.1" rx="1.6"/><rect x="21.5" y="45.1" width="19" height="12.9" rx="1.6"/></g></svg><span class="word">TILOGRAPH</span></a><button id="sound" aria-pressed="false">Sound on</button></header>
-<div class="copy">
+<header><a class="home" href="/"><svg viewBox="0 0 62 58" width="28"><g fill="#db3830"><rect x="0" y="0" width="36.6" height="18" rx="1.6"/><rect x="39.6" y="0" width="22.4" height="18" rx="1.6"/><rect x="21.5" y="21" width="19" height="21.1" rx="1.6"/><rect x="21.5" y="45.1" width="19" height="12.9" rx="1.6"/></g></svg><span class="word">TILOGRAPH</span></a><button id="hear" aria-pressed="false">Sound on</button></header>
+<div class="lede-block">
   <span class="mono">For iPhone and iPad</span>
   <h1>Your whole library, on one canvas.</h1>
   <p>Every picture, video and file you own becomes a tile. <strong>Pinch out</strong> and you see years at once. <strong>Pinch in</strong> and you are inside one afternoon. Nothing leaves your phone.</p>
@@ -43,7 +43,7 @@ footer a:hover{color:var(--ink)}
 <footer><span>© 2026 Black Lykhen Co., Ltd.</span><span><a href="/privacy/">Privacy</a> &nbsp;·&nbsp; <a href="/support/">Support</a> &nbsp;·&nbsp; <a href="mailto:support@blacklykhen.com">support@blacklykhen.com</a></span></footer>
 <script>
 (function(){
-  var v=document.getElementById('film'), b=document.getElementById('sound');
+  var v=document.getElementById('film'), b=document.getElementById('hear');
   b.addEventListener('click', function(){ v.muted=!v.muted; if(!v.muted){ v.currentTime=0; v.play(); } b.textContent=v.muted?'Sound on':'Sound off'; b.setAttribute('aria-pressed', String(!v.muted)); });
 })();
 </script>

@@ -18,7 +18,7 @@ a{color:inherit}
 .words h2{font-weight:300;font-size:56px;line-height:1.04;letter-spacing:-.01em;margin:0 0 14px}
 .words p{font-size:22px;color:var(--dim);margin:0;line-height:1.5}
 .words p strong{color:var(--ink);font-weight:400}
-.hero{position:absolute;left:2250px;top:1700px;width:1900px}
+.hero{position:absolute;left:2250px;top:1900px;width:1900px}
 .hero .word{font-size:26px;letter-spacing:.5em;color:var(--red);margin-left:.5em}
 .hero h1{font-weight:300;font-size:120px;line-height:.96;letter-spacing:-.015em;margin:14px 0 22px;max-width:9em}
 .hero p{font-size:28px;color:var(--dim);max-width:24em;margin:0 0 30px}
@@ -69,9 +69,9 @@ a{color:inherit}
   <div class="words" style="left:200px;top:1570px;width:1700px"><h2>Every zoom is a real zoom.</h2><p>Pinch towards any patch of the canvas and the pictures there come up sharp, with their neighbours around them. No list, no album to open first.</p></div>
 
   <!-- FIND -->
-  <div class="tile" data-sec="find" style="left:2300px;top:200px;width:1800px;height:1350px"><img src="/img/band-select.jpg" alt="Pictures chosen on the canvas, matches lit"></div>
+  <div class="tile" data-sec="find" style="left:2300px;top:200px;width:1800px;height:1150px"><img src="/img/band-select.jpg" alt="Pictures chosen on the canvas, matches lit"></div>
   <span class="tag" style="left:2300px;top:150px">July 2026 · find</span>
-  <div class="words" style="left:2300px;top:1580px;width:1800px"><h2>Type “beach 2019” and watch them light up.</h2><p>Faces, subjects, places and colours are read on your device. Matches light where they sit, so you see <strong>when and where</strong> they belong.</p></div>
+  <div class="words" style="left:2300px;top:1380px;width:1800px"><h2>Type “beach 2019” and watch them light up.</h2><p>Faces, subjects, places and colours are read on your device. Matches light where they sit, so you see <strong>when and where</strong> they belong.</p></div>
 
   <!-- VIDEO -->
   <div class="tile" data-sec="video" style="left:4500px;top:260px;width:1700px;height:1275px"><img src="/img/band-jelly.jpg" alt="A jellyfish video playing full screen"></div>
@@ -143,9 +143,9 @@ a{color:inherit}
   // the sections, as rectangles of the world
   var secs={
     all:{x:0,y:0,w:W,h:H},
-    hero:{x:2250,y:1650,w:1900,h:1250},
+    hero:{x:2250,y:1860,w:1900,h:1000},
     see:{x:200,y:200,w:1700,h:1700},
-    find:{x:2300,y:140,w:1800,h:1760},
+    find:{x:2300,y:140,w:1800,h:1560},
     video:{x:4500,y:200,w:1700,h:1700},
     open:{x:4500,y:1840,w:1700,h:1660},
     make:{x:2300,y:2890,w:1800,h:1760},
@@ -203,7 +203,8 @@ a{color:inherit}
   var all=targetFor(secs.all,1.06); set(all.s,all.tx,all.ty);
   var splash=document.getElementById('splash');
   var reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function begin(){ splash.classList.add('gone'); setTimeout(function(){ go('hero'); }, reduced?0:1400); }
+  var start=(location.hash||'').slice(1); if(!secs[start]) start='hero';
+  function begin(){ splash.classList.add('gone'); setTimeout(function(){ go(start); }, reduced?0:1400); }
   if(reduced){ begin(); } else { setTimeout(begin, 2600); }
 })();
 </script>

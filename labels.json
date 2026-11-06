@@ -1,0 +1,37 @@
+[
+{
+"text": "Sort by pets",
+"from": 29.25,
+"to": 38.35
+},
+{
+"text": "Sort by color",
+"from": 40.05,
+"to": 43.95
+},
+{
+"text": "Compare and delete duplicates",
+"from": 46.85,
+"to": 53.15
+},
+{
+"text": "Wander through your library",
+"from": 59.15,
+"to": 65.35
+},
+{
+"text": "View files and folders",
+"from": 70.95,
+"to": 75.95
+},
+{
+"text": "Create a poster",
+"from": 76.85,
+"to": 84.25
+},
+{
+"text": "Customize the app theme",
+"from": 88.15,
+"to": 98.05
+}
+]
